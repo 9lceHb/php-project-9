@@ -27,7 +27,7 @@ jobs:
     - name: Code Climate Coverage Action
       uses: paambaati/codeclimate-action@v3.0.0
       env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TESTCOVERAGE_PHP }}
+        CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TESTCOVERAGE_PHP_PROJECT_9 }}
       with:
         coverageCommand: make test-coverage
         coverageLocations: ${{github.workplace}}/build/logs/clover.xml:clover
