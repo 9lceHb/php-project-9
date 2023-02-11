@@ -3,6 +3,10 @@ start:
     PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public
 start2:
 	php -S localhost:8081 -t public
+
+install:
+	composer install
+	
 lint:
 	composer run-script phpcs -- --standard=PSR12 public src tests
 lint2:
