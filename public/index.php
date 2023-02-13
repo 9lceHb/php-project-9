@@ -24,8 +24,8 @@ $app->add(MethodOverrideMiddleware::class);
 $app->addErrorMiddleware(true, true, true);
 
 $app->get('/', function ($request, $response) {
-    return $response->write('hello world');
-    // return $this->get('renderer')->render($response, 'index.phtml');
+    // return $response->write('hello world');
+    return $this->get('renderer')->render($response, 'index.phtml');
 });
 
 $app->run();
