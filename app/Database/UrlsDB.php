@@ -61,17 +61,18 @@ class UrlsDB
         return false;
     }
 
-    public function insertLastCheck($id, $lastCheckTime)
+    public function insertLastCheck($id, $lastCheckTime, $statusCode)
     {
         $sql = 'UPDATE urls SET last_check = :lastCheckTime WHERE id = :id;';
         $stmt = $this->pdo->prepare($sql);
-        // $array = [
-        //     ':name' => $name,
-        //     ':created_at' => $createdAt,
-        // ];
         $stmt->bindValue(':id', $id);
         $stmt->bindValue(':lastCheckTime', $lastCheckTime);
         $stmt->execute();
+        $sql = 'UPDATE urls SET status_code = :status_code WHERE id = :id;';
+        $stmt2 = $this->pdo->prepare($sql);
+        $stmt2->bindValue(':id', $id);
+        $stmt2->bindValue(':status_code', $statusCode);
+        $stmt2->execute();
         // $stmt->execute($array);
         return $id;
     }

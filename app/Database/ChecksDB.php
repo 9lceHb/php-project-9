@@ -13,17 +13,14 @@ class ChecksDB
         $this->pdo = $pdo;
     }
 
-    public function insertCheck($urlId)
+    public function insertCheck($urlId, $statusCode)
     {
         $createdAt = Carbon::now();
-        $sql = 'INSERT INTO url_checks (url_id, created_at) VALUES(:url_id, :created_at);';
+        $sql = 'INSERT INTO url_checks (url_id, created_at, status_code) VALUES(:url_id, :created_at, :status_code);';
         $stmt = $this->pdo->prepare($sql);
-        // $array = [
-        //     ':name' => $name,
-        //     ':created_at' => $createdAt,
-        // ];
         $stmt->bindValue(':url_id', $urlId);
         $stmt->bindValue(':created_at', $createdAt);
+        $stmt->bindValue(':status_code', $statusCode);
         $stmt->execute();
         // $stmt->execute($array);
         return $createdAt;

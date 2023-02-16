@@ -31,7 +31,8 @@
         "tightenco/collect": "^9.47",
         "slim/flash": "^0.4.0",
         "vlucas/valitron": "^1.4",
-        "nesbot/carbon": "^2.66"
+        "nesbot/carbon": "^2.66",
+        "guzzlehttp/guzzle": "^7.5"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",

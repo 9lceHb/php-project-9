@@ -7,7 +7,8 @@ use Valitron\Validator;
 use Hexlet\Code\Database\Connection;
 use Hexlet\Code\Database\UrlsDB;
 use Hexlet\Code\Database\ChecksDB;
-use Carbon\Carbon;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Exception\ClientException;
 
 use function Symfony\Component\String\s;
 
@@ -88,11 +89,20 @@ $app->post('/urls', function ($request, $response) use ($router, $urlsPdo) {
     $params = ['errors' => $errors];
     return $this->get('renderer')->render($response, 'index.phtml', $params);
 });
-// <?= "/urls/" . $url['id'] . "/checks"
+
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($checksPdo, $urlsPdo, $router) {
     $urlId = $args['url_id'];
-    $lastCheckTime = $checksPdo->insertCheck($urlId);
-    $urlsPdo->insertLastCheck($urlId, $lastCheckTime);
+    $client = new GuzzleHttp\Client();
+    $urlName = $urlsPdo->selectUrl($urlId)[0]['name'];
+    try {
+        $res = $client->request('GET', $urlName);
+        $statusCode = $res->getStatusCode();
+        $lastCheckTime = $checksPdo->insertCheck($urlId, $statusCode);
+        $urlsPdo->insertLastCheck($urlId, $lastCheckTime, $statusCode);
+    } catch (ClientException $e) {
+        // echo Psr7\Message::toString($e->getRequest());
+        // echo Psr7\Message::toString($e->getResponse());
+    }
     $link = $router->urlFor('url', ['id' => $urlId]);
     return $response->withRedirect($link, 302);
 });
