@@ -1,1 +1,3 @@
 /vendor/
+test.php
+/app/Database/database.ini

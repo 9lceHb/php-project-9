@@ -4,7 +4,7 @@
     "bin": "/public/inddex.php",
     "autoload": {
         "psr-4": {
-            "Hexlet\\Code\\": "src/"
+            "Hexlet\\Code\\": ["app/", "src/"]
         },
         "files" : [
             "src/App.php"
@@ -29,7 +29,9 @@
         "fakerphp/faker": "^1.21",
         "symfony/string": "^6.2",
         "tightenco/collect": "^9.47",
-        "slim/flash": "^0.4.0"
+        "slim/flash": "^0.4.0",
+        "vlucas/valitron": "^1.4",
+        "nesbot/carbon": "^2.66"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",
