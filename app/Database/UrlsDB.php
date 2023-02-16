@@ -53,8 +53,9 @@ class UrlsDB
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':name', $url);
         $stmt->execute();
-        if ($stmt) {
-            $id = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['id'];
+        $array = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        if (!empty($array)) {
+            $id = $array[0]['id'];
             return $id;
         }
         return false;

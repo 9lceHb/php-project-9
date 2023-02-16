@@ -9,7 +9,9 @@ class Connection
     private static $conn;
     public function connect()
     {
-        if (!file_exists('database.ini')) {
+        // $file = realpath('app/Database/database.ini');
+        $file = realpath(__DIR__ . '/database.ini');
+        if (!file_exists($file)) {
             $databaseUrl = parse_url($_ENV['DATABASE_URL']);
             $username = $databaseUrl['user']; // janedoe
             $password = $databaseUrl['pass']; // mypassword
