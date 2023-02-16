@@ -11,15 +11,13 @@ use Carbon\Carbon;
 use function Symfony\Component\String\s;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-
+session_start();
 try {
     $pdo = Connection::get()->connect();
 } catch (\PDOException $e) {
     echo $e->getMessage();
 }
 $urlsPdo = new UrlsDB($pdo);
-
-session_start();
 
 $container = new Container();
 $container->set('renderer', function () {

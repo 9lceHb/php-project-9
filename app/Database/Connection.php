@@ -9,8 +9,7 @@ class Connection
     private static $conn;
     public function connect()
     {
-        $params = parse_ini_file('database.ini');
-        if ($params === false) {
+        if (!file_exists('database.ini')) {
             $databaseUrl = parse_url($_ENV['DATABASE_URL']);
             $username = $databaseUrl['user']; // janedoe
             $password = $databaseUrl['pass']; // mypassword
@@ -27,6 +26,7 @@ class Connection
             );
             // throw new \Exception("Error reading database configuration file");
         } else {
+            $params = parse_ini_file('database.ini');
             $conStr = sprintf(
                 "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
                 $params['host'],
