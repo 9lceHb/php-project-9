@@ -6,6 +6,7 @@ use Slim\Middleware\MethodOverrideMiddleware;
 use Valitron\Validator;
 use Hexlet\Code\Database\Connection;
 use Hexlet\Code\Database\UrlsDB;
+use Hexlet\Code\Database\ChecksDB;
 use Carbon\Carbon;
 
 use function Symfony\Component\String\s;
@@ -18,6 +19,7 @@ try {
     echo $e->getMessage();
 }
 $urlsPdo = new UrlsDB($pdo);
+$checksPdo = new ChecksDB($pdo);
 
 $container = new Container();
 $container->set('renderer', function () {
@@ -47,15 +49,15 @@ $app->get('/urls', function ($request, $response) use ($urlsPdo) {
     return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
 })->setName('urls');
 
-$app->get('/urls/{id}', function ($request, $response, $args) use ($urlsPdo) {
+$app->get('/urls/{id}', function ($request, $response, $args) use ($urlsPdo, $checksPdo) {
     $id = (int)$args['id'];
     $urlArray = $urlsPdo->selectUrl($id)[0];
+    $checks = $checksPdo->selectAllCheck($id);
     $messages = $this->get('flash')->getMessages();
     $params = [
-        'dateTime' => $urlArray['created_at'],
-        'id' => $urlArray['id'],
-        'url' => $urlArray['name'],
+        'url' => $urlArray,
         'flash' => $messages,
+        'checks' => $checks,
     ];
     return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
 })->setName('url');
@@ -85,6 +87,14 @@ $app->post('/urls', function ($request, $response) use ($router, $urlsPdo) {
     $errors = true;
     $params = ['errors' => $errors];
     return $this->get('renderer')->render($response, 'index.phtml', $params);
+});
+// <?= "/urls/" . $url['id'] . "/checks"
+$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($checksPdo, $urlsPdo, $router) {
+    $urlId = $args['url_id'];
+    $lastCheckTime = $checksPdo->insertCheck($urlId);
+    $urlsPdo->insertLastCheck($urlId, $lastCheckTime);
+    $link = $router->urlFor('url', ['id' => $urlId]);
+    return $response->withRedirect($link, 302);
 });
 
 $app->run();

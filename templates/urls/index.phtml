@@ -13,7 +13,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="/">Анализатор страниц</a>
         <a class="navbar-brand" href="/">Главная</a>
-        <a class="navbar-brand" href="/">Сайты</a>
+        <a class="navbar-brand" href="/urls">Сайты</a>
     </nav>
     </header>
     <main class="flex-grow-1">
@@ -27,13 +27,13 @@
                     <tr>
                         <th>ID</th>
                         <th>Имя</th>
-                        <th>Время создания</th>
+                        <th>Последняя проверка</th>
                     </tr>
                     <?php foreach ($urls as $url): ?>
                         <tr>
                             <td><?= $url['id'] ?></td>
                             <td><?= $url['name'] ?></td>
-                            <td><?= $url['created_at'] ?></td>
+                            <td><?= $url['last_check'] ?></td>
                         </tr>
                     <?php endforeach ?>
                 </tbody>

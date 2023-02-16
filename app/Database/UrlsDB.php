@@ -60,4 +60,19 @@ class UrlsDB
         }
         return false;
     }
+
+    public function insertLastCheck($id, $lastCheckTime)
+    {
+        $sql = 'UPDATE urls SET last_check = :lastCheckTime WHERE id = :id;';
+        $stmt = $this->pdo->prepare($sql);
+        // $array = [
+        //     ':name' => $name,
+        //     ':created_at' => $createdAt,
+        // ];
+        $stmt->bindValue(':id', $id);
+        $stmt->bindValue(':lastCheckTime', $lastCheckTime);
+        $stmt->execute();
+        // $stmt->execute($array);
+        return $id;
+    }
 }
