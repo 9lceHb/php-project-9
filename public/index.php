@@ -53,9 +53,15 @@ $app->get('/urls', function ($request, $response) use ($urlsPdo) {
     return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
 })->setName('urls');
 
-$app->get('/urls/{id}', function ($request, $response, $args) use ($urlsPdo, $checksPdo) {
+$app->get('/urls/{id}', function ($request, $response, $args) use ($urlsPdo, $checksPdo, $router) {
     $id = (int)$args['id'];
-    $urlArray = $urlsPdo->selectUrl($id)[0];
+    $array = $urlsPdo->selectUrl($id);
+    if (empty($array)) {
+        $this->get('flash')->addMessage('not find', 'Page not find');
+        $link = $router->urlFor('main');
+        return $response->withRedirect($link, 302);
+    }
+    $urlArray = $array[0];
     $checks = $checksPdo->selectAllCheck($id);
     $messages = $this->get('flash')->getMessages();
     $params = [
