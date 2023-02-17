@@ -27,7 +27,7 @@ if (!$urlsPdo->tableExists()) { // создание таблиц, если не�
     $urlsPdo->createTables();
 }
 
-$urlsPdo->clearData(30); // set min timeout for clear tables
+// $urlsPdo->clearData(30); // set min timeout for clear tables
 
 $container = new Container(); // хранит информацию о флеш сообщениях, шаблонах.
 $container->set('renderer', function () {
