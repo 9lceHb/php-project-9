@@ -13,7 +13,17 @@ class UrlsDB
         $this->pdo = $pdo;
     }
 
-    private function createTables()
+    public function tableExists()
+    {
+        try {
+            $result = $this->pdo->query("SELECT 1 FROM urls LIMIT 1"); // формальный запрос
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
+    }
+
+    public function createTables()
     {
         $sql1 = 'CREATE TABLE url_checks (
             id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

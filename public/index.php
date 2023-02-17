@@ -20,12 +20,16 @@ try {
 } catch (\PDOException $e) {
     echo $e->getMessage();
 }
-$urlsPdo = new UrlsDB($pdo);
+$urlsPdo = new UrlsDB($pdo);  // взаимодействие с конкретными таблицами
 $checksPdo = new ChecksDB($pdo);
+
+if (!$urlsPdo->tableExists()) { // создание таблиц, если нет
+    $urlsPdo->createTables();
+}
 
 $urlsPdo->clearData(30); // set min timeout for clear tables
 
-$container = new Container();
+$container = new Container(); // хранит информацию о флеш сообщениях, шаблонах.
 $container->set('renderer', function () {
     return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
 });
@@ -37,7 +41,7 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->add(MethodOverrideMiddleware::class);
 $app->addErrorMiddleware(true, true, true);
-$router = $app->getRouteCollector()->getRouteParser();
+$router = $app->getRouteCollector()->getRouteParser(); // именованый роутинг
 
 $app->get('/', function ($request, $response) {
     $messages = $this->get('flash')->getMessages();
