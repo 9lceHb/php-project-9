@@ -32,7 +32,9 @@
         "slim/flash": "^0.4.0",
         "vlucas/valitron": "^1.4",
         "nesbot/carbon": "^2.66",
-        "guzzlehttp/guzzle": "^7.5"
+        "guzzlehttp/guzzle": "^7.5",
+        "imangazaliev/didom": "^2.0",
+        "illuminate/support": "^10.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",

@@ -13,6 +13,31 @@ class UrlsDB
         $this->pdo = $pdo;
     }
 
+    private function createTables()
+    {
+        $sql1 = 'CREATE TABLE url_checks (
+            id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+            url_id bigint REFERENCES urls (id),
+            status_code int,
+            h1 text,
+            title text,
+            description text,
+            created_at timestamp
+            );';
+
+        $sql2 = 'CREATE TABLE urls (
+            id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+            name varchar(255),
+            created_at timestamp,
+            last_check timestamp,
+            status_code integer
+            );';
+        $this->pdo->exec($sql2);
+        $this->pdo->exec($sql1);
+
+        return $this;
+    }
+
     public function insertUrls($name)
     {
         $createdAt = Carbon::now();
@@ -40,7 +65,7 @@ class UrlsDB
 
     public function selectUrls()
     {
-        $sql = "SELECT * FROM urls ORDER BY id DESC;;";
+        $sql = "SELECT * FROM urls ORDER BY id DESC;";
         $stmt = $this->pdo->query($sql);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);//(\PDO::FETCH_UNIQUE); //\PDO::FETCH_ASSOC);
         // $stmt->execute($array);
@@ -75,5 +100,26 @@ class UrlsDB
         $stmt2->execute();
         // $stmt->execute($array);
         return $id;
+    }
+
+    public function clearData($min)
+    {
+        $currentTime = Carbon::now();
+        $sql = "SELECT MAX(GREATEST(created_at, last_check)) FROM urls;";
+        $stmt = $this->pdo->query($sql);
+        $maxTimeStr = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['max'];
+        if ($maxTimeStr !== null) {
+            $maxTime = Carbon::createFromFormat('Y-m-d H:i:s', $maxTimeStr) ?? null;
+            $diff = $maxTime->diffInMinutes($currentTime);
+            if ($min < $diff) {
+                $sql1 = 'DROP TABLE urls;';
+                $sql2 = 'DROP TABLE url_checks;';
+                $stmt3 = $this->pdo->prepare($sql2);
+                $stmt3->execute();
+                $stmt2 = $this->pdo->prepare($sql1);
+                $stmt2->execute();
+                $this->createTables();
+            }
+        }
     }
 }

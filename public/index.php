@@ -9,6 +9,7 @@ use Hexlet\Code\Database\UrlsDB;
 use Hexlet\Code\Database\ChecksDB;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\ClientException;
+use DiDom\Document;
 
 use function Symfony\Component\String\s;
 
@@ -21,6 +22,8 @@ try {
 }
 $urlsPdo = new UrlsDB($pdo);
 $checksPdo = new ChecksDB($pdo);
+
+$urlsPdo->clearData(30); // set min timeout for clear tables
 
 $container = new Container();
 $container->set('renderer', function () {
@@ -97,7 +100,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     try {
         $res = $client->request('GET', $urlName);
         $statusCode = $res->getStatusCode();
-        $lastCheckTime = $checksPdo->insertCheck($urlId, $statusCode);
+        $lastCheckTime = $checksPdo->insertCheck($urlId, $res);
         $urlsPdo->insertLastCheck($urlId, $lastCheckTime, $statusCode);
     } catch (ClientException $e) {
         // echo Psr7\Message::toString($e->getRequest());
