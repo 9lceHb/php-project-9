@@ -8,7 +8,7 @@ install:
 	composer install
 	
 lint:
-	composer run-script phpcs -- --standard=PSR12 public tests app templates
+	composer run-script phpcs -- --standard=PSR12 public app templates
 lint2:
 	composer run-script phpcs -- --standard=PSR12 public tests
 
