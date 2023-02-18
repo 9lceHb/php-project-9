@@ -27,7 +27,7 @@ if (!$urlsPdo->tableExists()) { // создание таблиц, если не�
     $urlsPdo->createTables();
 }
 
-// $urlsPdo->clearData(30); // set min timeout for clear tables
+$urlsPdo->clearData(30); // set min timeout for clear tables
 
 $container = new Container(); // хранит информацию о флеш сообщениях, шаблонах.
 $container->set('renderer', function () {
@@ -109,9 +109,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     $urlName = $urlsPdo->selectUrl($urlId)[0]['name'];
     try {
         $res = $client->request('GET', $urlName);
-        $statusCode = $res->getStatusCode();
-        $lastCheckTime = $checksPdo->insertCheck($urlId, $res);
-        $urlsPdo->insertLastCheck($urlId, $lastCheckTime, $statusCode);
+        $checksPdo->insertCheck($urlId, $res);
     } catch (ClientException $e) {
         // echo Psr7\Message::toString($e->getRequest());
         // echo Psr7\Message::toString($e->getResponse());

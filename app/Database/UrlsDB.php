@@ -38,9 +38,7 @@ class UrlsDB
         $sql2 = 'CREATE TABLE urls (
             id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
             name varchar(255),
-            created_at timestamp,
-            last_check timestamp,
-            status_code integer
+            created_at timestamp
             );';
         $this->pdo->exec($sql2);
         $this->pdo->exec($sql1);
@@ -66,7 +64,9 @@ class UrlsDB
 
     public function selectUrl($id)
     {
-        $sql = "SELECT * FROM urls WHERE id = {$id};";
+        $sql = "SELECT *
+            FROM urls
+            WHERE id = $id;";
         $stmt = $this->pdo->query($sql);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         // $stmt->execute($array);
@@ -75,7 +75,15 @@ class UrlsDB
 
     public function selectUrls()
     {
-        $sql = "SELECT * FROM urls ORDER BY id DESC;";
+        $sql = "WITH main AS (WITH temp_table AS (SELECT url_id, MAX(created_at) as max_created FROM url_checks
+            GROUP BY url_id)
+            SELECT url_checks.url_id AS id, url_checks.created_at as last_check, url_checks.status_code
+            FROM url_checks JOIN temp_table
+            ON url_checks.url_id = temp_table.url_id
+            WHERE url_checks.created_at = temp_table.max_created)
+            SELECT urls.id, urls.name, main.last_check, main.status_code FROM urls
+            LEFT JOIN main ON urls.id = main.id
+            ORDER BY id DESC;";
         $stmt = $this->pdo->query($sql);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);//(\PDO::FETCH_UNIQUE); //\PDO::FETCH_ASSOC);
         // $stmt->execute($array);
@@ -96,26 +104,12 @@ class UrlsDB
         return false;
     }
 
-    public function insertLastCheck($id, $lastCheckTime, $statusCode)
-    {
-        $sql = 'UPDATE urls SET last_check = :lastCheckTime WHERE id = :id;';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':id', $id);
-        $stmt->bindValue(':lastCheckTime', $lastCheckTime);
-        $stmt->execute();
-        $sql = 'UPDATE urls SET status_code = :status_code WHERE id = :id;';
-        $stmt2 = $this->pdo->prepare($sql);
-        $stmt2->bindValue(':id', $id);
-        $stmt2->bindValue(':status_code', $statusCode);
-        $stmt2->execute();
-        // $stmt->execute($array);
-        return $id;
-    }
-
     public function clearData($min)
     {
         $currentTime = Carbon::now();
-        $sql = "SELECT MAX(GREATEST(created_at, last_check)) FROM urls;";
+        $sql = "SELECT MAX(GREATEST(urls.created_at, url_checks.created_at)) FROM urls
+            LEFT JOIN url_checks
+            ON urls.id = url_checks.url_id;";
         $stmt = $this->pdo->query($sql);
         $maxTimeStr = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['max'];
         if ($maxTimeStr !== null) {
