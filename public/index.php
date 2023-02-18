@@ -110,9 +110,11 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     try {
         $res = $client->request('GET', $urlName);
         $checksPdo->insertCheck($urlId, $res);
+        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     } catch (ClientException $e) {
         // echo Psr7\Message::toString($e->getRequest());
         // echo Psr7\Message::toString($e->getResponse());
+        $this->get('flash')->addMessage('error', 'Ошибка при проверке страницы');
     }
     $link = $router->urlFor('url', ['id' => $urlId]);
     return $response->withRedirect($link, 302);
