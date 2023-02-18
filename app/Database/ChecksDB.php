@@ -7,20 +7,22 @@ use DiDom\Document;
 
 class ChecksDB
 {
-    private object $pdo;
+    private mixed $pdo;
 
-    public function __construct(object $pdo)
+    public function __construct(mixed $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    private function prepareData(object $res): array
+    private function prepareData(mixed $res)
     {
         $html = $res->getBody()->getContents();
         $statusCode = $res->getStatusCode();
         $document = new Document($html);
-        $title = $document->has('title') ? $document->find('title')[0]->text() : null;
-        $h1 = $document->has('h1') ? mb_substr($document->find('h1')[0]->text(), 0, 255) : null;
+        $title = $document->has('title') ? $document->find('title')[0] : null;
+        $title = isset($title) ? $title->text() : null;
+        $h1 = $document->has('h1') ? $document->find('h1')[0] : null;
+        $h1 = isset($h1) ? mb_substr($h1->text(), 0, 255) : null;
         $content = $document->has('meta[name=description]')
         ? optional($document->find('meta[name=description]')[0])->attr('content')
         : null;
@@ -32,7 +34,7 @@ class ChecksDB
         ];
     }
 
-    public function insertCheck(int $urlId, object $res): object
+    public function insertCheck(int $urlId, mixed $res)
     {
         $data = $this->prepareData($res);
         $createdAt = Carbon::now();
@@ -50,7 +52,7 @@ class ChecksDB
         return $createdAt;
     }
 
-    public function selectAllCheck(int $urlId): array
+    public function selectAllCheck(int $urlId)
     {
         $sql = "SELECT * FROM url_checks WHERE url_id = {$urlId} ORDER BY id DESC;";
         $stmt = $this->pdo->query($sql);

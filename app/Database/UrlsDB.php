@@ -6,9 +6,9 @@ use Carbon\Carbon;
 
 class UrlsDB
 {
-    private object $pdo;
+    private mixed $pdo;
 
-    public function __construct(object $pdo)
+    public function __construct(mixed $pdo)
     {
         $this->pdo = $pdo;
     }
@@ -46,7 +46,7 @@ class UrlsDB
         return $this;
     }
 
-    public function insertUrls(string $name): int
+    public function insertUrls(string $name)
     {
         $createdAt = Carbon::now();
         $sql = 'INSERT INTO urls (name, created_at) VALUES(:name, :created_at);';
@@ -62,7 +62,7 @@ class UrlsDB
         return $this->pdo->lastInsertId('urls_id_seq');
     }
 
-    public function selectUrl(int $id): array
+    public function selectUrl(int $id)
     {
         $sql = "SELECT *
             FROM urls
@@ -90,7 +90,7 @@ class UrlsDB
         return $result;
     }
 
-    public function isDouble(string $url): mixed
+    public function isDouble(string $url)
     {
         $sql = 'SELECT * FROM urls WHERE name = :name;';
         $stmt = $this->pdo->prepare($sql);
@@ -114,15 +114,17 @@ class UrlsDB
         $maxTimeStr = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['max'];
         if ($maxTimeStr !== null) {
             $maxTime = Carbon::createFromFormat('Y-m-d H:i:s', $maxTimeStr);
-            $diff = $maxTime->diffInMinutes($currentTime);
-            if ($min < $diff) {
-                $sql1 = 'DROP TABLE urls;';
-                $sql2 = 'DROP TABLE url_checks;';
-                $stmt3 = $this->pdo->prepare($sql2);
-                $stmt3->execute();
-                $stmt2 = $this->pdo->prepare($sql1);
-                $stmt2->execute();
-                $this->createTables();
+            if ($maxTime) {
+                $diff = $maxTime->diffInMinutes($currentTime);
+                if ($min < $diff) {
+                    $sql1 = 'DROP TABLE urls;';
+                    $sql2 = 'DROP TABLE url_checks;';
+                    $stmt3 = $this->pdo->prepare($sql2);
+                    $stmt3->execute();
+                    $stmt2 = $this->pdo->prepare($sql1);
+                    $stmt2->execute();
+                    $this->createTables();
+                }
             }
         }
     }
