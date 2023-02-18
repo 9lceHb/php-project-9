@@ -19,10 +19,9 @@ class ChecksDB
         $html = $res->getBody()->getContents();
         $statusCode = $res->getStatusCode();
         $document = new Document($html);
-        $title = $document->has('title') ? $document->find('title')[0] : null;
-        $title = isset($title) ? $title->text() : null;
-        $h1 = $document->has('h1') ? $document->find('h1')[0] : null;
-        $h1 = isset($h1) ? mb_substr($h1->text(), 0, 255) : null;
+        $title = $document->has('title') ? optional($document->find('title')[0])->text() : null;
+        $h1 = $document->has('h1') ? optional($document->find('h1')[0])->text() : null;
+        $h1 = isset($h1) ? mb_substr($h1, 0, 255) : null;
         $content = $document->has('meta[name=description]')
         ? optional($document->find('meta[name=description]')[0])->attr('content')
         : null;

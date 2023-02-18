@@ -6,7 +6,8 @@ use Carbon\Carbon;
 
 class Connection
 {
-    private static mixed $conn = null;
+    private static ?Connection $conn = null;
+
     public function connect()
     {
         // $file = realpath('app/Database/database.ini');
@@ -47,7 +48,7 @@ class Connection
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         return $pdo;
     }
-    public static function get(): object
+    public static function get()
     {
         if (null === self::$conn) {
             self::$conn = new self();
