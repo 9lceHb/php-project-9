@@ -4,14 +4,15 @@ namespace Hexlet\Code\Database;
 
 use Carbon\Carbon;
 
-class Connection
+final class Connection
 {
-    private static $conn;
-    public function connect()
+    private static ?object $conn = null;
+    public function connect(): object
     {
         // $file = realpath('app/Database/database.ini');
         $file = realpath(__DIR__ . '/database.ini');
-        if (!file_exists($file)) {
+        // if (!file_exists($file)) {
+        if ($file === false) {
             $databaseUrl = parse_url($_ENV['DATABASE_URL']);
             $username = $databaseUrl['user']; // janedoe
             $password = $databaseUrl['pass']; // mypassword
@@ -42,10 +43,10 @@ class Connection
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         return $pdo;
     }
-    public static function get()
+    public static function get(): object
     {
-        if (null === static::$conn) {
-            static::$conn = new static();
+        if (static::$conn === null) {
+            static::$conn = new self();
         }
 
         return static::$conn;

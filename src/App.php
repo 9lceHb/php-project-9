@@ -2,7 +2,7 @@
 
 namespace Hexlet\Code\App;
 
-function abba($a)
+function abba(string $a): string
 {
     return $a;
 }

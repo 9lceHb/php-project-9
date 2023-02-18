@@ -6,14 +6,14 @@ use Carbon\Carbon;
 
 class UrlsDB
 {
-    private $pdo;
+    private object $pdo;
 
-    public function __construct($pdo)
+    public function __construct(object $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    public function tableExists()
+    public function tableExists(): bool
     {
         try {
             $result = $this->pdo->query("SELECT 1 FROM urls LIMIT 1"); // формальный запрос
@@ -23,7 +23,7 @@ class UrlsDB
         return true;
     }
 
-    public function createTables()
+    public function createTables(): object
     {
         $sql1 = 'CREATE TABLE url_checks (
             id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -46,7 +46,7 @@ class UrlsDB
         return $this;
     }
 
-    public function insertUrls($name)
+    public function insertUrls(string $name): int
     {
         $createdAt = Carbon::now();
         $sql = 'INSERT INTO urls (name, created_at) VALUES(:name, :created_at);';
@@ -62,7 +62,7 @@ class UrlsDB
         return $this->pdo->lastInsertId('urls_id_seq');
     }
 
-    public function selectUrl($id)
+    public function selectUrl(int $id): array
     {
         $sql = "SELECT *
             FROM urls
@@ -73,7 +73,7 @@ class UrlsDB
         return $result;
     }
 
-    public function selectUrls()
+    public function selectUrls(): array
     {
         $sql = "WITH main AS (WITH temp_table AS (SELECT url_id, MAX(created_at) as max_created FROM url_checks
             GROUP BY url_id)
@@ -90,7 +90,7 @@ class UrlsDB
         return $result;
     }
 
-    public function isDouble($url)
+    public function isDouble(string $url): mixed
     {
         $sql = 'SELECT * FROM urls WHERE name = :name;';
         $stmt = $this->pdo->prepare($sql);
@@ -104,7 +104,7 @@ class UrlsDB
         return false;
     }
 
-    public function clearData($min)
+    public function clearData(int $min)
     {
         $currentTime = Carbon::now();
         $sql = "SELECT MAX(GREATEST(urls.created_at, url_checks.created_at)) FROM urls
@@ -113,7 +113,7 @@ class UrlsDB
         $stmt = $this->pdo->query($sql);
         $maxTimeStr = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['max'];
         if ($maxTimeStr !== null) {
-            $maxTime = Carbon::createFromFormat('Y-m-d H:i:s', $maxTimeStr) ?? null;
+            $maxTime = Carbon::createFromFormat('Y-m-d H:i:s', $maxTimeStr);
             $diff = $maxTime->diffInMinutes($currentTime);
             if ($min < $diff) {
                 $sql1 = 'DROP TABLE urls;';

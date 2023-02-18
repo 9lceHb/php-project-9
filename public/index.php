@@ -15,11 +15,12 @@ use function Symfony\Component\String\s;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 session_start();
-try {
-    $pdo = Connection::get()->connect();
-} catch (\PDOException $e) {
-    echo $e->getMessage();
-}
+// try {
+//     $pdo = Connection::get()->connect();
+// } catch (\PDOException $e) {
+//     echo $e->getMessage();
+// }
+$pdo = Connection::get()->connect();
 $urlsPdo = new UrlsDB($pdo);  // взаимодействие с конкретными таблицами
 $checksPdo = new ChecksDB($pdo);
 

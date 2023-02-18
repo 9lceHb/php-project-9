@@ -12,7 +12,7 @@ class AppTest extends TestCase
 {
     public function testabba(): void
     {
-        $testAnswer1 = 5;
-        $this->assertEquals($testAnswer1, abba(5));
+        $testAnswer1 = '5';
+        $this->assertEquals($testAnswer1, abba('5'));
     }
 }

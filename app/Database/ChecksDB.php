@@ -7,14 +7,14 @@ use DiDom\Document;
 
 class ChecksDB
 {
-    private $pdo;
+    private object $pdo;
 
-    public function __construct($pdo)
+    public function __construct(object $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    private function prepareData($res)
+    private function prepareData(object $res): array
     {
         $html = $res->getBody()->getContents();
         $statusCode = $res->getStatusCode();
@@ -32,7 +32,7 @@ class ChecksDB
         ];
     }
 
-    public function insertCheck($urlId, $res)
+    public function insertCheck(int $urlId, object $res): object
     {
         $data = $this->prepareData($res);
         $createdAt = Carbon::now();
@@ -50,7 +50,7 @@ class ChecksDB
         return $createdAt;
     }
 
-    public function selectAllCheck($urlId)
+    public function selectAllCheck(int $urlId): array
     {
         $sql = "SELECT * FROM url_checks WHERE url_id = {$urlId} ORDER BY id DESC;";
         $stmt = $this->pdo->query($sql);
