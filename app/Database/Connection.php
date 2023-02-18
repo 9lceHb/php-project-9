@@ -4,9 +4,9 @@ namespace Hexlet\Code\Database;
 
 use Carbon\Carbon;
 
-final class Connection
+class Connection
 {
-    private static ?object $conn = null;
+    private static $conn; // ?object $conn = null;
     public function connect(): object
     {
         // $file = realpath('app/Database/database.ini');
@@ -46,7 +46,7 @@ final class Connection
     public static function get(): object
     {
         if (static::$conn === null) {
-            static::$conn = new self();
+            static::$conn = new static();
         }
 
         return static::$conn;

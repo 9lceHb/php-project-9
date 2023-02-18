@@ -4,7 +4,7 @@
     "bin": "/public/inddex.php",
     "autoload": {
         "psr-4": {
-            "Hexlet\\Code\\": ["app/", "src/"]
+            "Hexlet\\Code\\": "app/"
         }
     },
     "authors": [
@@ -15,7 +15,8 @@
     ],
     "scripts": {
         "phpcs": "phpcs",
-        "phpunit": "phpunit"
+        "phpunit": "phpunit",
+        "phpstan": "phpstan"
     },
     "require": {
         "php": ">=8.1 <8.2",
