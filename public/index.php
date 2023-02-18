@@ -100,7 +100,7 @@ $app->post('/urls', function ($request, $response) use ($router, $urlsPdo) {
     }
     $errors = true;
     $params = ['errors' => $errors];
-    return $this->get('renderer')->render($response->setStatus(422), 'index.phtml', $params);
+    return $this->get('renderer')->render($response->withStatus(422), 'index.phtml', $params);
 });
 
 $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($checksPdo, $urlsPdo, $router) {
